@@ -1,35 +1,100 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io/ioutil"
+	"math/rand"
 	"net"
+	"os"
+	"strings"
 	"time"
 )
 
-// only needed below for sample processing
+const (
+	// Period -- количество милисекунд, через которые
+	// новые данные отправляются на сервер
+	Period = 450
+
+	// Port - сокет, который слушаем
+	Port = ":7777"
+
+	// PathBoth - путь до файла
+	PathBoth = "data/unsd-citypopulation-year-both.csv"
+
+	// PathDiff - путь до файла
+	PathDiff = "data/unsd-citypopulation-year-fm.csv"
+)
 
 func main() {
+	rand.Seed(32)
 
-	fmt.Println("Launching server...")
+	str := readCsv(PathBoth)
+	lines := stringToLines(str)
+	count := len(lines)
 
-	// listen on all interfaces
-	ln, _ := net.Listen("tcp", ":7777")
-
-	// accept connection on port
+	ln, _ := net.Listen("tcp", Port)
 	conn, _ := ln.Accept()
 
-	// run loop forever (or until ctrl-c)
-	for {
-		// will listen for message to process ending in newline (\n)
-		// message, _ := bufio.NewReader(conn).ReadString('\n')
-		// output message received
-		// fmt.Print("Message Received:", string(message))
-
-		// sample process for string received
-		newmessage := "sagasg, saasg, awt"
-		// send new string back to client
-		conn.Write([]byte(newmessage + "\n"))
-
-		time.Sleep(450 * time.Millisecond)
+	c := time.Tick(Period * time.Millisecond)
+	counter := 0
+	for range c {
+		nextStep := counter + rand.Intn(5)
+		for i := counter; i < count && i < nextStep; i++ {
+			newmessage := lines[i]
+			// send new string back to client
+			conn.Write([]byte(newmessage + "\n"))
+		}
+		counter = nextStep
+		if counter > count {
+			break
+		}
 	}
+
+	conn.Close()
+}
+
+func readCsv(path string) string {
+	b, err := ioutil.ReadFile(path) // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	str := string(b) // convert content to a 'string'
+
+	return str
+}
+
+func stringToLines(s string) []string {
+	var lines []string
+
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+	}
+
+	return lines
+}
+
+func file2lines(filePath string) []string {
+	f, err := os.Open(filePath)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	return lines
 }
