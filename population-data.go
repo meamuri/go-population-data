@@ -37,7 +37,7 @@ func main() {
 	conn, _ := ln.Accept()
 
 	c := time.Tick(Period * time.Millisecond)
-	counter := 0
+	counter := 1
 	for range c {
 		nextStep := counter + rand.Intn(5)
 		for i := counter; i < count && i < nextStep; i++ {
