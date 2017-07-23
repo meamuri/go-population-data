@@ -39,14 +39,16 @@ func main() {
 	c := time.Tick(Period * time.Millisecond)
 	counter := 1
 	for range c {
+
 		nextStep := counter + rand.Intn(5)
 		for i := counter; i < count && i < nextStep; i++ {
 			newmessage := lines[i]
 			// send new string back to client
 			conn.Write([]byte(newmessage + "\n"))
 		}
+		fmt.Printf("%d lines were sended of %d\n", nextStep, count)
 		counter = nextStep
-		if counter > count {
+		if counter >= count {
 			break
 		}
 	}
