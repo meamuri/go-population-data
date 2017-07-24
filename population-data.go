@@ -30,7 +30,6 @@ const (
 )
 
 func main() {
-	// rand.Seed(32)
 	rand.Seed(time.Now().Unix())
 
 	str := readCsv(PathBoth)
