@@ -45,10 +45,10 @@ $ go install
 
 Запуск для чтения файлов обоих полов:
 ```bash
-$ population-data -data=both 
+$ population-data -data both 
 ```
 Для чтения файла с записями о разных полах раздельно:
 ```bash
 
-$ population-data -data=diff
+$ population-data -data diff
 ```

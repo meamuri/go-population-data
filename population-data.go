@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -27,12 +28,29 @@ const (
 
 	// Rows -- количество строк, которое хочу считать
 	Rows = 50
+
+	// ErrorMessageArgs -- строка об ошибке!
+	ErrorMessageArgs = "Что-то не так с аргументом комендной строки -data"
 )
 
 func main() {
+	wordPtr := flag.String("data", "both", "which file do you need?")
+	flag.Parse()
+
+	var path string
+	if *wordPtr == "diff" {
+		path = PathDiff
+	} else if *wordPtr == "both" {
+		path = PathBoth
+	} else {
+		fmt.Println(ErrorMessageArgs)
+		return
+	}
+
+	fmt.Println("Выбран файл: " + path)
 	rand.Seed(time.Now().Unix())
 
-	str := readCsv(PathBoth)
+	str := readCsv(path)
 	lines := stringToLines(str)
 	count := len(lines)
 
