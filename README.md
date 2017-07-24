@@ -49,6 +49,12 @@ $ population-data -data both
 ```
 Для чтения файла с записями о разных полах раздельно:
 ```bash
-
 $ population-data -data diff
+```
+
+### Внимание!
+При таком запуске в папку bin/population-data положить папку data репозитория!
+ну или не выделываться и запускать так из папки, склонированной с гита: 
+```bash
+$ go run population-data
 ```
