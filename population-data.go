@@ -24,10 +24,14 @@ const (
 
 	// PathDiff - путь до файла
 	PathDiff = "data/unsd-citypopulation-year-fm.csv"
+
+	// Rows -- количество строк, которое хочу считать
+	Rows = 50
 )
 
 func main() {
-	rand.Seed(32)
+	// rand.Seed(32)
+	rand.Seed(time.Now().Unix())
 
 	str := readCsv(PathBoth)
 	lines := stringToLines(str)
@@ -40,7 +44,7 @@ func main() {
 	counter := 1
 	for range c {
 
-		nextStep := counter + rand.Intn(5)
+		nextStep := counter + rand.Intn(Rows)
 		for i := counter; i < count && i < nextStep; i++ {
 			newmessage := lines[i]
 			// send new string back to client
