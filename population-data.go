@@ -27,7 +27,7 @@ const (
 	PathDiff = "data/unsd-citypopulation-year-fm.csv"
 
 	// Rows -- количество строк, которое хочу считать
-	Rows = 50
+	Rows = 500
 
 	// ErrorMessageArgs -- строка об ошибке!
 	ErrorMessageArgs = "Что-то не так с аргументом комендной строки -data"
