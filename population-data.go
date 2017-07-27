@@ -49,29 +49,51 @@ func main() {
 	rand.Seed(time.Now().Unix())
 
 	lines := file2lines(path)
-	count := len(lines)
 
+	str := make(chan string)
+	quit := make(chan int)
+	go launchServer(str, quit)
+	linesPusher(lines, str, quit)
+
+}
+
+func launchServer(row chan string, quit chan int) {
 	ln, _ := net.Listen("tcp", Port)
 	conn, _ := ln.Accept()
+	defer conn.Close()
 
-	c := time.Tick(Period * time.Millisecond)
+	fmt.Println("в го рутине")
+	for {
+		select {
+		case msg := <-row:
+			conn.Write([]byte(msg + "\n"))
+		case <-quit:
+			return
+		}
+	}
+}
+
+func linesPusher(lines []string, row chan string, quit chan int) {
 	counter := 1
-	for range c {
-
+	count := len(lines)
+	fmt.Printf("В мейн. %d отправил из %d\n", counter, count)
+	for {
 		nextStep := counter + rand.Intn(Rows)
 		for i := counter; i < count && i < nextStep; i++ {
 			newmessage := lines[i]
-			// send new string back to client
-			conn.Write([]byte(newmessage + "\n"))
+			row <- newmessage
 		}
 		fmt.Printf("%d lines were sended of %d\n", nextStep, count)
+
+		sleepTime := time.Duration(rand.Intn(Rows*2)) * time.Millisecond
+		time.Sleep(sleepTime)
+
 		counter = nextStep
 		if counter >= count {
 			break
 		}
 	}
-
-	conn.Close()
+	quit <- 0
 }
 
 func file2lines(filePath string) []string {
