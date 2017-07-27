@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"net"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -50,8 +48,7 @@ func main() {
 	fmt.Println("Выбран файл: " + path)
 	rand.Seed(time.Now().Unix())
 
-	str := readCsv(path)
-	lines := stringToLines(str)
+	lines := file2lines(path)
 	count := len(lines)
 
 	ln, _ := net.Listen("tcp", Port)
@@ -75,32 +72,6 @@ func main() {
 	}
 
 	conn.Close()
-}
-
-func readCsv(path string) string {
-	b, err := ioutil.ReadFile(path) // just pass the file name
-	if err != nil {
-		fmt.Print(err)
-	}
-
-	str := string(b) // convert content to a 'string'
-
-	return str
-}
-
-func stringToLines(s string) []string {
-	var lines []string
-
-	scanner := bufio.NewScanner(strings.NewReader(s))
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading standard input:", err)
-	}
-
-	return lines
 }
 
 func file2lines(filePath string) []string {
